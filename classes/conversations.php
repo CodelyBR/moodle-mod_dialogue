@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace mod_dialogue;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -30,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
  * @property-read dialogue $page The page number used to create offset for fetching recordset.
  * @property-read dialogue $limit The number of rows to be returned in recordset.
  */
-abstract class mod_dialogue_conversations implements renderable {
+abstract class conversations implements \renderable {
     /** @var The dialogue this list of conversations belongs **/
     protected $_dialogue = null;
 

@@ -17,8 +17,9 @@
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once('lib.php');
 require_once('locallib.php');
-require_once($CFG->dirroot . '/mod/dialogue/classes/conversations.php');
-require_once($CFG->dirroot . '/mod/dialogue/classes/conversations_by_role.php');
+
+use \mod_dialogue\dialogue as dialogue;
+use \mod_dialogue\conversations_by_role as conversations_by_role;
 
 $id         = required_param('id', PARAM_INT);
 $roleid     = optional_param('roleid', 0, PARAM_INT);
@@ -79,13 +80,12 @@ if (dialogue_cm_needs_upgrade($cm->id)) {
     exit;
 }
 
-dialogue_load_bootstrap_js();// load javascript if not bootstrap theme
 
 $PAGE->requires->yui_module('moodle-mod_dialogue-clickredirector',
                             'M.mod_dialogue.clickredirector.init', array($cm->id));
 
 $dialogue = new dialogue($cm, $course, $activityrecord);
-$list = new mod_dialogue_conversations_by_role($dialogue, $roleid, $page, dialogue::PAGINATION_PAGE_SIZE);
+$list = new conversations_by_role($dialogue, $roleid, $page, dialogue::PAGINATION_PAGE_SIZE);
 $list->set_order($sort, $direction);
 
 $renderer = $PAGE->get_renderer('mod_dialogue');
@@ -106,6 +106,7 @@ $roleselector .= html_writer::start_tag('button', $attributes);
 $roleselector .= $rolenames[$roleid] . ' ' . html_writer::tag('span', null, array('class' => 'caret'));
 $roleselector .= html_writer::end_tag('button');
 $roleselector .= html_writer::start_tag('ul', array('class' => 'dropdown-menu'));
+//print_object($rolenames);
 foreach ($rolenames as $roleid => $rolename) {
     $pageurl->param('roleid', $roleid);
     $roleselector .= html_writer::start_tag('li');
@@ -116,7 +117,7 @@ $roleselector .= html_writer::end_tag('ul');
 $roleselector .= html_writer::end_div(); // end of js-control
 $roleselector .= html_writer::end_div();
 echo $roleselector;
-echo $renderer->list_sortby(mod_dialogue_conversations_by_role::get_sort_options(), $sort, $direction);
+echo $renderer->list_sortby(conversations_by_role::get_sort_options(), $sort, $direction);
 echo $renderer->conversation_listing($list);
 echo $OUTPUT->footer($course);
 $logurl = new moodle_url('viewconversationsbyrole.php', array('id' =>  $cm->id));

@@ -17,8 +17,9 @@
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once('lib.php');
 require_once('locallib.php');
-require_once($CFG->dirroot . '/mod/dialogue/classes/conversations.php');
-require_once($CFG->dirroot . '/mod/dialogue/classes/conversations_by_author.php');
+
+use \mod_dialogue\dialogue as dialogue;
+use \mod_dialogue\conversations_by_author as conversations_by_author;
 
 $id         = required_param('id', PARAM_INT);
 $state      = optional_param('state', dialogue::STATE_OPEN, PARAM_ALPHA);
@@ -73,13 +74,11 @@ if (dialogue_cm_needs_upgrade($cm->id)) {
     exit;
 }
 
-dialogue_load_bootstrap_js();// load javascript if not bootstrap theme
-
 $PAGE->requires->yui_module('moodle-mod_dialogue-clickredirector',
                             'M.mod_dialogue.clickredirector.init', array($cm->id));
 
 $dialogue = new dialogue($cm, $course, $activityrecord);
-$list = new mod_dialogue_conversations_by_author($dialogue, $page, dialogue::PAGINATION_PAGE_SIZE);
+$list = new conversations_by_author($dialogue, $page, dialogue::PAGINATION_PAGE_SIZE);
 $list->set_state($state);
 $list->set_order($sort, $direction);
 
@@ -94,7 +93,7 @@ if (!empty($dialogue->activityrecord->intro)) {
 // render tab navigation, toggle button groups and order by dropdown
 echo $renderer->tab_navigation($dialogue);
 echo $renderer->state_button_group();
-echo $renderer->list_sortby(mod_dialogue_conversations_by_author::get_sort_options(), $sort, $direction);
+echo $renderer->list_sortby(conversations_by_author::get_sort_options(), $sort, $direction);
 echo $renderer->conversation_listing($list);
 echo $OUTPUT->footer($course);
 $logurl = new moodle_url('view.php', array('id' =>  $cm->id));

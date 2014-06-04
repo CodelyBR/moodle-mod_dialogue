@@ -64,11 +64,6 @@ function dialogue_add_instance($data) {
 
     $result =  $DB->insert_record('dialogue', $data);
 
-    if (isset($data->legacytype)) {
-        $context = context_module::instance($data->coursemodule);
-        dialogue_apply_legacy_permissions($context, $data->legacytype);
-    }
-
     return $result;
 }
 
@@ -90,11 +85,6 @@ function dialogue_update_instance($data, $mform) {
     $data->id = $data->instance;
 
     $DB->update_record('dialogue', $data);
-
-    if (isset($data->legacytype)) {
-        $context = context_module::instance($data->coursemodule);
-        dialogue_apply_legacy_permissions($context, $data->legacytype);
-    }
 
     return true;
 }
@@ -248,9 +238,9 @@ function dialogue_cm_info_view(cm_info $cm) {
     }
 
     if ($usetracking) {
-        $unread = dialogue_cm_unread_total(new dialogue($cm));
+        $unread = dialogue_cm_unread_total(new \mod_dialogue\dialogue($cm));
         if ($unread) {
-            $out = '<span class="unread"> <a href="' . $cm->get_url() . '">';
+            $out = '<span class="unread"> <a href="' . $cm->url . '">';
             if ($unread == 1) {
                 $out .= $strunreadmessagesone;
             } else {
@@ -444,19 +434,4 @@ function dialogue_pluginfile($course, $cm, $context, $filearea, $args, $forcedow
 
     // Send the file
     send_stored_file($file, 0, 0, $forcedownload, $options);
-}
-
-/* Event handler functions @TODO */
-function dialogue_user_enrolled($eventdata) {
-    cache_helper::purge_by_event($event);
-    return true;
-}
-function dialogue_user_unenrolled($eventdata) {
-    return true;
-}
-function dialogue_groups_member_added($eventdata) {
-    return true;
-}
-function dialogue_groups_member_removed($eventdata) {
-    return true;
 }

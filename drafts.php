@@ -18,6 +18,8 @@ require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once('lib.php');
 require_once('locallib.php');
 
+use \mod_dialogue\dialogue as dialogue;
+
 $id         = required_param('id', PARAM_INT);
 $page       = optional_param('page', 0, PARAM_INT);
 

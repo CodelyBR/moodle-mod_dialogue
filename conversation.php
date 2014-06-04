@@ -27,6 +27,10 @@ require_once($CFG->dirroot . '/mod/dialogue/lib.php');
 require_once($CFG->dirroot . '/mod/dialogue/locallib.php');
 require_once($CFG->dirroot . '/mod/dialogue/formlib.php');
 
+//TODO
+use \mod_dialogue\dialogue as dialogue;
+use \mod_dialogue\conversation as conversation;
+
 $id             = required_param('id', PARAM_INT);
 $conversationid = optional_param('conversationid', null, PARAM_INT);
 $action         = optional_param('action', 'view', PARAM_ALPHA);
@@ -62,8 +66,9 @@ $PAGE->set_context($context);
 $PAGE->set_cacheable(false);
 $PAGE->set_url($pageurl);
 
+
 $dialogue = new dialogue($cm, $course, $activityrecord);
-$conversation = new dialogue_conversation($dialogue, $conversationid);
+$conversation = new conversation($dialogue, $conversationid);
 
 // form actions
 if ($action == 'create' or $action == 'edit') {
@@ -155,13 +160,13 @@ if ($conversation->state == dialogue::STATE_OPEN or $conversation->state == dial
 // view conversation by default
 $renderer = $PAGE->get_renderer('mod_dialogue');
 echo $OUTPUT->header($activityrecord->name);
-echo $renderer->render($conversation);
+echo $renderer->render_dialogue_conversation($conversation);
 $conversation->mark_read();
 
 // render replies
 if ($conversation->replies()) {
     foreach ($conversation->replies() as $reply) {
-        echo $renderer->render($reply);
+        echo $renderer->render_reply($reply);
         $reply->mark_read();
     }
 }

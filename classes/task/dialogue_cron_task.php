@@ -14,19 +14,33 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Code fragment to define the module version etc.
- * This fragment is called by /admin/index.php
- *
- * @package mod-dialogue
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-defined('MOODLE_INTERNAL') || die();
+namespace mod_dialogue\task;
 
-$module->version   = 2014040111;
-$module->requires  = 2013111800;        // See http://docs.moodle.org/dev/Moodle_Versions
-$module->cron      = 60;
-$module->component = 'mod_dialogue';    // Full name of the plugin (used for diagnostics)
-$module->release   = '2.7';             // Human-friendly version name
-$module->maturity  = MATURITY_RC;       // This version's maturity level
-$module->dependencies = array();
+/**
+ * Simple task to run the blog cron.
+ */
+class dialogue_cron_task extends \core\task\scheduled_task {
+
+    /**
+     * Get a descriptive name for this task (shown to admins).
+     *
+     * @return string
+     */
+    public function get_name() {
+        return get_string('dialoguecron', 'dialogue');
+    }
+
+    /**
+     * Do the job.
+     * Throw exceptions on errors (the job will be retried).
+     */
+    public function execute() {
+        global $CFG, $DB;
+
+        if (isset($CFG->dialoguecrondisabled)) {
+            mtrace('Dialogue task cron is disabled in config!');
+            return true;
+        }
+    }
+
+}
